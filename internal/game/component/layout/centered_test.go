@@ -8,6 +8,7 @@ import (
 
 	"github.com/davidsbond/kingdom/internal/game/component/layout"
 	"github.com/davidsbond/kingdom/internal/game/component/text"
+	"github.com/davidsbond/kingdom/internal/game/window"
 )
 
 func TestCentered_View(t *testing.T) {
@@ -22,7 +23,7 @@ func TestCentered_View(t *testing.T) {
 			Name:  "text",
 			Model: text.Text("test"),
 			Messages: []tea.Msg{
-				tea.WindowSizeMsg{
+				window.SizeMessage{
 					Width:  104,
 					Height: 25,
 				},

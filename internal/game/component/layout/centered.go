@@ -3,6 +3,8 @@ package layout
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/davidsbond/kingdom/internal/game/window"
 )
 
 type (
@@ -13,6 +15,8 @@ type (
 	}
 )
 
+// Centered returns a tea.Model implementation that wraps another tea.Model implementation, ensuring it is centered
+// relative to the window size when rendered.
 func Centered(model tea.Model) tea.Model {
 	return &centered{
 		model: model,
@@ -20,11 +24,16 @@ func Centered(model tea.Model) tea.Model {
 }
 
 func (b *centered) Init() tea.Cmd {
-	return tea.Batch(tea.WindowSize(), b.model.Init())
+	commands := []tea.Cmd{window.Size()}
+	if command := b.model.Init(); command != nil {
+		commands = append(commands, command)
+	}
+
+	return tea.Sequence(commands...)
 }
 
 func (b *centered) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if message, ok := msg.(tea.WindowSizeMsg); ok {
+	if message, ok := msg.(window.SizeMessage); ok {
 		b.width = message.Width
 		b.height = message.Height
 	}

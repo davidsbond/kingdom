@@ -18,6 +18,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/davidsbond/kingdom/internal/game/scene"
+	"github.com/davidsbond/kingdom/internal/game/window"
 )
 
 type (
@@ -38,7 +39,10 @@ func Run(ctx context.Context, config Config) error {
 		wish.WithMiddleware(
 			recover.MiddlewareWithLogger(logger,
 				bubbletea.Middleware(func(sess ssh.Session) (tea.Model, []tea.ProgramOption) {
-					return scene.Splash(), []tea.ProgramOption{
+					pty, _, _ := sess.Pty()
+					w := window.Window(pty.Window.Width, pty.Window.Height)
+
+					return scene.Splash(w), []tea.ProgramOption{
 						tea.WithAltScreen(),
 						tea.WithContext(ctx),
 						tea.WithFPS(60),

@@ -7,16 +7,17 @@ import (
 
 type (
 	scene struct {
+		window tea.Model
 		models []tea.Model
 	}
 )
 
-func create(models ...tea.Model) tea.Model {
-	return &scene{models: models}
+func create(window tea.Model, models ...tea.Model) tea.Model {
+	return &scene{window: window, models: models}
 }
 
 func (s *scene) Init() tea.Cmd {
-	commands := make([]tea.Cmd, 0)
+	commands := []tea.Cmd{s.window.Init()}
 	for _, model := range s.models {
 		if cmd := model.Init(); cmd != nil {
 			commands = append(commands, cmd)
@@ -27,11 +28,20 @@ func (s *scene) Init() tea.Cmd {
 }
 
 func (s *scene) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if message, ok := msg.(ChangeMessage); ok {
+		c := message.To(s.window)
+		return c, c.Init()
+	}
+
 	commands := make([]tea.Cmd, 0)
 	for _, model := range s.models {
 		if _, cmd := model.Update(msg); cmd != nil {
 			commands = append(commands, cmd)
 		}
+	}
+
+	if _, command := s.window.Update(msg); command != nil {
+		commands = append(commands, command)
 	}
 
 	return s, tea.Batch(commands...)

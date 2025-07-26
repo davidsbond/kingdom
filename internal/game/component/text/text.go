@@ -12,6 +12,7 @@ type (
 	}
 )
 
+// Text returns a tea.Model implementation that displays some static text.
 func Text(content string) tea.Model {
 	return &text{
 		content: content,
@@ -24,7 +25,7 @@ func (t *text) Init() tea.Cmd {
 }
 
 func (t *text) Update(_ tea.Msg) (tea.Model, tea.Cmd) {
-	return nil, nil
+	return t, nil
 }
 
 func (t *text) View() string {
