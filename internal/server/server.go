@@ -32,6 +32,7 @@ type (
 
 func Run(ctx context.Context, config Config) error {
 	logger := config.Logger
+	log.SetDefault(logger)
 
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(config.Host, strconv.Itoa(config.Port))),
@@ -79,7 +80,7 @@ func Run(ctx context.Context, config Config) error {
 
 	err = group.Wait()
 	switch {
-	case errors.Is(err, context.Canceled):
+	case errors.Is(err, context.Canceled), errors.Is(err, ssh.ErrServerClosed):
 		return nil
 	case err != nil:
 		return err

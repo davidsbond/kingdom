@@ -2,7 +2,7 @@ package layout
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 
 	"github.com/davidsbond/kingdom/internal/game/window"
 )

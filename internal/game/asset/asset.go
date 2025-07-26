@@ -5,6 +5,8 @@ import (
 	"embed"
 	"path"
 	"sync"
+
+	"github.com/charmbracelet/log"
 )
 
 var (
@@ -26,7 +28,7 @@ func Image(name string) []string {
 	p := path.Join("image", name)
 	f, err := images.ReadFile(p)
 	if err != nil {
-		// TODO(davidsbond): something here when the image doesn't exist. Maybe just panic?
+		log.With("name", name, "error", err).Error("failed to load image")
 		return nil
 	}
 
@@ -39,6 +41,6 @@ func Image(name string) []string {
 	imageMux.Lock()
 	loadedImages[name] = img
 	imageMux.Unlock()
-	
+
 	return img
 }

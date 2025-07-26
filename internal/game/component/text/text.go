@@ -3,31 +3,51 @@ package text
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss/v2"
+
+	"github.com/davidsbond/kingdom/internal/game/component"
 )
 
 type (
 	text struct {
+		component.NoUpdate
+		component.NoInit
+
 		style   lipgloss.Style
 		content string
 	}
+
+	// The Option type is a function used to modify the text instance.
+	Option func(txt *text)
 )
 
 // Text returns a tea.Model implementation that displays some static text.
-func Text(content string) tea.Model {
-	return &text{
+func Text(content string, options ...Option) tea.Model {
+	txt := &text{
 		content: content,
 		style:   lipgloss.NewStyle(),
 	}
-}
 
-func (t *text) Init() tea.Cmd {
-	return nil
-}
+	for _, option := range options {
+		option(txt)
+	}
 
-func (t *text) Update(_ tea.Msg) (tea.Model, tea.Cmd) {
-	return t, nil
+	return txt
 }
 
 func (t *text) View() string {
 	return t.style.Render(t.content)
+}
+
+// Width is an Option that modifies the width of a piece of text.
+func Width(w int) Option {
+	return func(txt *text) {
+		txt.style = txt.style.Width(w)
+	}
+}
+
+// Align is an Option that modifies the alignment of a piece of text.
+func Align(p lipgloss.Position) Option {
+	return func(txt *text) {
+		txt.style = txt.style.Align(p)
+	}
 }

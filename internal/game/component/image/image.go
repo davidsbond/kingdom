@@ -1,41 +1,55 @@
 package image
 
 import (
+	"image/color"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss/v2"
 
 	"github.com/davidsbond/kingdom/internal/game/asset"
+	"github.com/davidsbond/kingdom/internal/game/component"
 )
 
 type (
 	image struct {
+		component.NoUpdate
+		component.NoInit
+
 		content []string
 		style   lipgloss.Style
 	}
+
+	// The Option type is a function used to modify an image.
+	Option func(i *image)
 )
 
 // Image returns a tea.Model implementation that is used to render an image. In the context of this game, an image is
 // pretty much just a text file that we split into lines and place vertically.
-func Image(name string) tea.Model {
-	return &image{
+func Image(name string, options ...Option) tea.Model {
+	i := &image{
 		content: asset.Image(name),
 		style:   lipgloss.NewStyle(),
 	}
-}
 
-func (i *image) Init() tea.Cmd {
-	return nil
-}
+	for _, option := range options {
+		option(i)
+	}
 
-func (i *image) Update(_ tea.Msg) (tea.Model, tea.Cmd) {
-	return i, nil
+	return i
 }
 
 func (i *image) View() string {
 	return i.style.Render(
 		lipgloss.JoinVertical(
-			lipgloss.Center,
+			lipgloss.Top,
 			i.content...,
 		),
 	)
+}
+
+// Foreground is an Option that modifies the foreground colour of the image.
+func Foreground(c color.Color) Option {
+	return func(i *image) {
+		i.style = i.style.Foreground(c)
+	}
 }
