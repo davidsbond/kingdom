@@ -12,7 +12,7 @@ type (
 	}
 
 	// A ChangeFunc is a function that can generate a new scene.
-	ChangeFunc func(window tea.Model) tea.Model
+	ChangeFunc func(ctx Context) tea.Model
 )
 
 func change(to ChangeFunc) tea.Cmd {

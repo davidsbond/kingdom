@@ -5,44 +5,41 @@ import (
 )
 
 type (
-	window struct {
+	// The Window type is used to manage the window of a single player.
+	Window struct {
 		width  int
 		height int
 	}
 )
 
-// Window returns a tea.Model implementation that handles per-client window size tracking. When using wish, it seems
+// New returns a Window instance that handles per-client window size tracking. When using wish, it seems
 // that calling tea.WindowSize doesn't produce a tea.WindowSizeMsg. This means we need a model that lasts the lifetime
 // of the client as when we switch from scene to scene any components that rely on the window size will no longer
 // have it.
 //
 // This model handles the tea.WindowSizeMsg should any client change their window size, but also handles its own custom
 // GetSizeMessage which will produce a Size message for any other models that want it.
-func Window(w, h int) tea.Model {
-	return &window{
+func New(w, h int) *Window {
+	return &Window{
 		width:  w,
 		height: h,
 	}
 }
 
-func (w *window) Init() tea.Cmd {
+func (w *Window) Init() tea.Cmd {
 	return size(w.width, w.height)
 }
 
-func (w *window) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (w *Window) Update(msg tea.Msg) tea.Cmd {
 	switch message := msg.(type) {
 	case tea.WindowSizeMsg:
 		w.width = message.Width
 		w.height = message.Height
 
-		return w, size(w.width, w.height)
+		return size(w.width, w.height)
 	case GetSizeMessage:
-		return w, size(w.width, w.height)
+		return size(w.width, w.height)
 	}
 
-	return w, nil
-}
-
-func (w *window) View() string {
-	return ""
+	return nil
 }

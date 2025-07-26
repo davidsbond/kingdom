@@ -17,6 +17,7 @@ import (
 	"github.com/charmbracelet/wish/recover"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/davidsbond/kingdom/internal/game"
 	"github.com/davidsbond/kingdom/internal/game/scene"
 	"github.com/davidsbond/kingdom/internal/game/window"
 )
@@ -34,6 +35,8 @@ func Run(ctx context.Context, config Config) error {
 	logger := config.Logger
 	log.SetDefault(logger)
 
+	state := game.NewState()
+
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(config.Host, strconv.Itoa(config.Port))),
 		wish.WithHostKeyPath(config.KeyPath),
@@ -41,9 +44,17 @@ func Run(ctx context.Context, config Config) error {
 			recover.MiddlewareWithLogger(logger,
 				bubbletea.Middleware(func(sess ssh.Session) (tea.Model, []tea.ProgramOption) {
 					pty, _, _ := sess.Pty()
-					w := window.Window(pty.Window.Width, pty.Window.Height)
 
-					return scene.Splash(w), []tea.ProgramOption{
+					w := window.New(pty.Window.Width, pty.Window.Height)
+					player := state.Player(sess.User())
+
+					sctx := scene.Context{
+						Window: w,
+						Player: player,
+						State:  state,
+					}
+
+					return scene.Splash(sctx), []tea.ProgramOption{
 						tea.WithAltScreen(),
 						tea.WithContext(ctx),
 						tea.WithFPS(60),

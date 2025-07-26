@@ -3,21 +3,37 @@ package scene
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss/v2"
+
+	"github.com/davidsbond/kingdom/internal/game"
+	"github.com/davidsbond/kingdom/internal/game/window"
 )
 
 type (
 	scene struct {
-		window tea.Model
 		models []tea.Model
+		ctx    Context
+	}
+
+	// The Context type is a bag of things that all scenes depend on that act as global state.
+	Context struct {
+		// Information on the current window.
+		Window *window.Window
+		// Information on the current player.
+		Player *game.Player
+		// The game state shared across all players.
+		State *game.State
 	}
 )
 
-func create(window tea.Model, models ...tea.Model) tea.Model {
-	return &scene{window: window, models: models}
+func create(ctx Context, models ...tea.Model) tea.Model {
+	return &scene{
+		models: models,
+		ctx:    ctx,
+	}
 }
 
 func (s *scene) Init() tea.Cmd {
-	commands := []tea.Cmd{s.window.Init()}
+	commands := []tea.Cmd{s.ctx.Window.Init()}
 	for _, model := range s.models {
 		if cmd := model.Init(); cmd != nil {
 			commands = append(commands, cmd)
@@ -29,7 +45,8 @@ func (s *scene) Init() tea.Cmd {
 
 func (s *scene) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if message, ok := msg.(ChangeMessage); ok {
-		c := message.To(s.window)
+		c := message.To(s.ctx)
+
 		return c, c.Init()
 	}
 
@@ -40,7 +57,7 @@ func (s *scene) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	if _, command := s.window.Update(msg); command != nil {
+	if command := s.ctx.Window.Update(msg); command != nil {
 		commands = append(commands, command)
 	}
 

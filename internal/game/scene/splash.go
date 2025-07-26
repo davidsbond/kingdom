@@ -14,7 +14,7 @@ import (
 )
 
 // Splash returns a tea.Model implementation describing the splash screen scene.
-func Splash(window tea.Model) tea.Model {
+func Splash(ctx Context) tea.Model {
 	version := "Development Version"
 	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" {
 		version = info.Main.Version
@@ -26,8 +26,7 @@ func Splash(window tea.Model) tea.Model {
 		logoName  = "logo.txt"
 	)
 
-	return create(
-		window,
+	return create(ctx,
 		timing.After(duration, change(Splash)),
 		layout.Centered(
 			layout.Vertical(

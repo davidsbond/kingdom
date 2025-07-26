@@ -29,7 +29,7 @@ func (b *centered) Init() tea.Cmd {
 		commands = append(commands, command)
 	}
 
-	return tea.Sequence(commands...)
+	return tea.Batch(commands...)
 }
 
 func (b *centered) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
