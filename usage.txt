@@ -1,0 +1,4 @@
+Hosts a game of Kingdom, a simple turn-based strategy game played entirely through SSH.
+
+Take turns acquiring land, building your army and overwhelming your enemies. A game consists of 2 players battling for
+supremacy to determine the rightful ruler of the kingdom.
