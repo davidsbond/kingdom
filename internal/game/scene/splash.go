@@ -5,8 +5,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
+	"github.com/davidsbond/kingdom/internal/game/component/image"
 	"github.com/davidsbond/kingdom/internal/game/component/layout"
-	"github.com/davidsbond/kingdom/internal/game/component/text"
 	"github.com/davidsbond/kingdom/internal/game/component/timing"
 )
 
@@ -16,7 +16,7 @@ func Splash(window tea.Model) tea.Model {
 		window,
 		timing.After(time.Second*5, change(Splash)),
 		layout.Centered(
-			text.Text("hello world"),
+			image.Image("logo.txt"),
 		),
 	)
 }

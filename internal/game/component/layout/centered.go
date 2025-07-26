@@ -44,9 +44,9 @@ func (b *centered) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (b *centered) View() string {
 	return lipgloss.Place(
 		b.width,
-		b.height/2,
+		b.height,
 		lipgloss.Center,
-		lipgloss.Top,
+		lipgloss.Center,
 		b.model.View(),
 	)
 }
