@@ -9,7 +9,7 @@ import (
 	"github.com/davidsbond/kingdom/internal/game/component/text"
 )
 
-func TestText_View(t *testing.T) {
+func TestText(t *testing.T) {
 	t.Parallel()
 
 	tt := []struct {

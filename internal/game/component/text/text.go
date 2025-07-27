@@ -1,6 +1,8 @@
 package text
 
 import (
+	"image/color"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss/v2"
 
@@ -49,5 +51,26 @@ func Width(w int) Option {
 func Align(p lipgloss.Position) Option {
 	return func(txt *text) {
 		txt.style = txt.style.Align(p)
+	}
+}
+
+// Foreground is an Option that modifies the foreground colour of a piece of text.
+func Foreground(c color.Color) Option {
+	return func(txt *text) {
+		txt.style = txt.style.Foreground(c)
+	}
+}
+
+// Background is an Option that modifies the background colour of a piece of text.
+func Background(c color.Color) Option {
+	return func(txt *text) {
+		txt.style = txt.style.Background(c)
+	}
+}
+
+// Padding is an Option that modifies the padding of a piece of text.
+func Padding(p ...int) Option {
+	return func(txt *text) {
+		txt.style = txt.style.Padding(p...)
 	}
 }

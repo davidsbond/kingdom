@@ -8,7 +8,7 @@ import (
 	"github.com/davidsbond/kingdom/internal/game/component/image"
 )
 
-func TestImage_View(t *testing.T) {
+func TestImage(t *testing.T) {
 	t.Parallel()
 
 	tt := []struct {

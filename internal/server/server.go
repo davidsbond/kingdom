@@ -15,6 +15,7 @@ import (
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/charmbracelet/wish/logging"
 	"github.com/charmbracelet/wish/recover"
+	"github.com/muesli/termenv"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/davidsbond/kingdom/internal/game"
@@ -42,7 +43,7 @@ func Run(ctx context.Context, config Config) error {
 		wish.WithHostKeyPath(config.KeyPath),
 		wish.WithMiddleware(
 			recover.MiddlewareWithLogger(logger,
-				bubbletea.Middleware(func(sess ssh.Session) (tea.Model, []tea.ProgramOption) {
+				bubbletea.MiddlewareWithProgramHandler(func(sess ssh.Session) *tea.Program {
 					pty, _, _ := sess.Pty()
 
 					w := window.New(pty.Window.Width, pty.Window.Height)
@@ -52,14 +53,21 @@ func Run(ctx context.Context, config Config) error {
 						Window: w,
 						Player: player,
 						State:  state,
+						Logger: logger.With("ssh_user", sess.User()),
 					}
 
-					return scene.Splash(sctx), []tea.ProgramOption{
+					program := tea.NewProgram(scene.Splash(sctx),
 						tea.WithAltScreen(),
 						tea.WithContext(ctx),
 						tea.WithFPS(60),
-					}
-				}),
+						tea.WithOutput(sess),
+						tea.WithInput(sess),
+					)
+
+					player.SetProgram(program)
+
+					return program
+				}, termenv.Ascii),
 			),
 			activeterm.Middleware(),
 			logging.StructuredMiddlewareWithLogger(logger, log.DebugLevel),
@@ -77,6 +85,12 @@ func Run(ctx context.Context, config Config) error {
 			Info("starting server")
 
 		return s.ListenAndServe()
+	})
+
+	group.Go(func() error {
+		<-ctx.Done()
+
+		return ctx.Err()
 	})
 
 	group.Go(func() error {

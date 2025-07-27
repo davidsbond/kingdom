@@ -10,7 +10,7 @@ import (
 	"github.com/davidsbond/kingdom/internal/game/component/text"
 )
 
-func TestVertical(t *testing.T) {
+func TestHorizontal(t *testing.T) {
 	t.Parallel()
 
 	tt := []struct {
@@ -29,10 +29,10 @@ func TestVertical(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			vertical := layout.Vertical(tc.Models...)
-			vertical.Init()
+			horizontal := layout.Horizontal(tc.Models...)
+			horizontal.Init()
 
-			golden.RequireEqual(t, []byte(vertical.View()))
+			golden.RequireEqual(t, []byte(horizontal.View()))
 		})
 	}
 }

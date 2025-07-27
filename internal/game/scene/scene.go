@@ -2,9 +2,10 @@ package scene
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/log"
 
 	"github.com/davidsbond/kingdom/internal/game"
+	"github.com/davidsbond/kingdom/internal/game/component"
 	"github.com/davidsbond/kingdom/internal/game/window"
 )
 
@@ -22,6 +23,8 @@ type (
 		Player *game.Player
 		// The game state shared across all players.
 		State *game.State
+		// The logger for the current player.
+		Logger *log.Logger
 	}
 )
 
@@ -57,6 +60,10 @@ func (s *scene) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	if command := s.ctx.State.Update(msg); command != nil {
+		commands = append(commands, command)
+	}
+
 	if command := s.ctx.Window.Update(msg); command != nil {
 		commands = append(commands, command)
 	}
@@ -65,15 +72,5 @@ func (s *scene) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (s *scene) View() string {
-	strings := make([]string, 0)
-	for _, e := range s.models {
-		if view := e.View(); view != "" {
-			strings = append(strings, view)
-		}
-	}
-
-	return lipgloss.JoinVertical(
-		lipgloss.Top,
-		strings...,
-	)
+	return component.View(s.models...)
 }

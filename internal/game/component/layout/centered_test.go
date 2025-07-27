@@ -11,7 +11,7 @@ import (
 	"github.com/davidsbond/kingdom/internal/game/window"
 )
 
-func TestCentered_View(t *testing.T) {
+func TestCentered(t *testing.T) {
 	t.Parallel()
 
 	tt := []struct {

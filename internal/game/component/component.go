@@ -2,6 +2,7 @@ package component
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 // Init performs initialisation of all the provided models, returning a batched command if any models returned a
@@ -36,6 +37,21 @@ func Update(msg tea.Msg, models ...tea.Model) tea.Cmd {
 	}
 
 	return nil
+}
+
+// View returns a string representing the views of all the provided models joined vertically.
+func View(models ...tea.Model) string {
+	strings := make([]string, 0)
+	for _, m := range models {
+		if view := m.View(); view != "" {
+			strings = append(strings, view)
+		}
+	}
+
+	return lipgloss.JoinVertical(
+		lipgloss.Top,
+		strings...,
+	)
 }
 
 type (
