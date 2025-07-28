@@ -16,6 +16,8 @@ import (
 
 // Splash returns a tea.Model implementation describing the splash screen scene.
 func Splash(ctx Context) tea.Model {
+	logger := ctx.Logger.With("scene", "splash")
+
 	version := "Development Version"
 	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" {
 		version = info.Main.Version
@@ -27,8 +29,8 @@ func Splash(ctx Context) tea.Model {
 		logoName  = "logo.txt"
 	)
 
-	ctx.Logger.With("scene", "splash").Debug("initialising scene")
-	
+	logger.Debug("initialising scene")
+
 	return create(ctx,
 		timing.After(duration, tea.Sequence(
 			change(Lobby),
@@ -36,7 +38,7 @@ func Splash(ctx Context) tea.Model {
 		)),
 		layout.Centered(
 			layout.Vertical(
-				image.Image(logoName, image.Foreground(lipgloss.Red)),
+				image.Image(logger, logoName, image.Foreground(lipgloss.Red)),
 				text.Text(version,
 					text.Width(logoWidth),
 					text.Align(lipgloss.Center),

@@ -2,20 +2,23 @@ package text
 
 import (
 	"image/color"
+	"io"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/log"
 
 	"github.com/davidsbond/kingdom/internal/game/component"
 )
 
 type (
 	text struct {
-		component.NoUpdate
 		component.NoInit
 
+		id      string
 		style   lipgloss.Style
 		content string
+		logger  *log.Logger
 	}
 
 	// The Option type is a function used to modify the text instance.
@@ -27,6 +30,7 @@ func Text(content string, options ...Option) tea.Model {
 	txt := &text{
 		content: content,
 		style:   lipgloss.NewStyle(),
+		logger:  log.New(io.Discard),
 	}
 
 	for _, option := range options {
@@ -34,6 +38,26 @@ func Text(content string, options ...Option) tea.Model {
 	}
 
 	return txt
+}
+
+func (t *text) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	logger := t.logger.With("component", t.id)
+
+	switch message := msg.(type) {
+	case ChangeMessage:
+		if t.id != message.ID {
+			break
+		}
+
+		logger.With(
+			"old_content", t.content,
+			"new_content", message.Content,
+		).Debug("changing text content")
+
+		t.content = message.Content
+	}
+
+	return t, nil
 }
 
 func (t *text) View() string {
@@ -72,5 +96,18 @@ func Background(c color.Color) Option {
 func Padding(p ...int) Option {
 	return func(txt *text) {
 		txt.style = txt.style.Padding(p...)
+	}
+}
+
+// ID is an Option that sets the identifier of a text component. This is used to enable dynamic behaviour.
+func ID(id string) Option {
+	return func(txt *text) {
+		txt.id = id
+	}
+}
+
+func Logger(l *log.Logger) Option {
+	return func(txt *text) {
+		txt.logger = l
 	}
 }

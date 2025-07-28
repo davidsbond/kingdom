@@ -42,6 +42,10 @@ func (b *centered) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (b *centered) View() string {
+	if b.width == 0 || b.height == 0 {
+		return ""
+	}
+	
 	return lipgloss.Place(
 		b.width,
 		b.height,

@@ -18,6 +18,7 @@ import (
 // to join it will display "WAITING..." and update via messaging once the player joins.
 func LobbyPlayerTitle(logger *log.Logger, state *game.State, player int) tea.Model {
 	id := fmt.Sprintf("lobby-player-title-%d", player)
+	logger = logger.With("entity", id)
 
 	align := lipgloss.Left
 	colour := lipgloss.Red
@@ -27,7 +28,7 @@ func LobbyPlayerTitle(logger *log.Logger, state *game.State, player int) tea.Mod
 	}
 
 	const (
-		width   = 36
+		width   = 42
 		margin  = 1
 		padding = 1
 	)
@@ -37,15 +38,13 @@ func LobbyPlayerTitle(logger *log.Logger, state *game.State, player int) tea.Mod
 		name = p.Name()
 	}
 
-	logger = logger.With("entity", "lobby_player_title")
-
 	return create(id,
 		message.Handler(func(msg tea.Msg) tea.Cmd {
 			if m, ok := msg.(game.PlayerJoinedMessage); ok && m.Number == player {
 				logger.
 					With("player_name", m.Name, "player_number", m.Number).
 					Debug("detected player join")
-				
+
 				return text.Change(id, m.Name)
 			}
 
@@ -54,16 +53,17 @@ func LobbyPlayerTitle(logger *log.Logger, state *game.State, player int) tea.Mod
 
 		layout.Vertical(
 			layout.Container(
-				text.Dynamic(id,
+				text.Text(name,
+					text.ID(id),
+					text.Logger(logger),
 					text.Foreground(lipgloss.Black),
 					text.Background(colour),
 					text.Width(width),
 					text.Align(align),
-					text.Content(name),
 					text.Padding(0, padding, 0),
 				),
 				layout.ContainerAlign(lipgloss.Center),
-				layout.ContainerMargin(margin),
+				layout.ContainerMargin(0, margin, 0),
 				layout.ContainerBorder(border.Wing(align), colour),
 			),
 		),

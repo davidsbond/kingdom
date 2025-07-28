@@ -15,6 +15,7 @@ type (
 	}
 )
 
+// Handler returns a tea.Model implementation that can handle arbitrary tea.Msg implementations.
 func Handler(fn func(msg tea.Msg) tea.Cmd) tea.Model {
 	return &handler{
 		fn: fn,

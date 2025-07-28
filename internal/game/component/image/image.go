@@ -5,6 +5,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/log"
 
 	"github.com/davidsbond/kingdom/internal/game/asset"
 	"github.com/davidsbond/kingdom/internal/game/component"
@@ -25,9 +26,9 @@ type (
 
 // Image returns a tea.Model implementation that is used to render an image. In the context of this game, an image is
 // pretty much just a text file that we split into lines and place vertically.
-func Image(name string, options ...Option) tea.Model {
+func Image(logger *log.Logger, name string, options ...Option) tea.Model {
 	i := &image{
-		content: asset.Image(name),
+		content: asset.Image(logger, name),
 		style:   lipgloss.NewStyle(),
 	}
 
